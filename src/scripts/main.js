@@ -9,7 +9,7 @@ const numbersPopulation = [...populationsMap]
 
     return Number.isFinite(num) ? num : null;
   })
-  .filter((num) => num !== null);
+  .filter(Number.isFinite);
 
 const validNumbers = numbersPopulation.filter(Number.isFinite);
 const totalPopulation = validNumbers.reduce(
@@ -22,15 +22,42 @@ const averagePopulation =
     ? Math.round(totalPopulation / validNumbers.length)
     : 0;
 
+function detectSeparator(text) {
+  if (text.includes(',')) {
+    return ',';
+  }
+
+  if (text.includes(' ')) {
+    return ' ';
+  }
+
+  if (text.includes('.')) {
+    return '.';
+  }
+}
+
+const sampleText = populationsMap[0]?.textContent.trim() || '';
+const separator = detectSeparator(sampleText);
+
+function formatNumber(number) {
+  const localSeparator = detectSeparator(number);
+
+  return number
+    .toString()
+    .replace(new RegExp(`\\B(?=(\\d{3})+(?!\\d))`, 'g'), localSeparator);
+}
+
 const totalPopulationElement = document.querySelector('.total-population');
 
 if (totalPopulationElement) {
-  totalPopulationElement.textContent = totalPopulation.toLocaleString('en-US');
+  totalPopulationElement.textContent = formatNumber(totalPopulation, separator);
 }
 
 const averagePopulationElement = document.querySelector('.average-population');
 
 if (averagePopulationElement) {
-  averagePopulationElement.textContent =
-    averagePopulation.toLocaleString('en-US');
+  averagePopulationElement.textContent = formatNumber(
+    averagePopulation,
+    separator,
+  );
 }
